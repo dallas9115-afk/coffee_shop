@@ -1,0 +1,2 @@
+CREATE DATABASE IF NOT EXISTS coffee_shop;
+CREATE DATABASE IF NOT EXISTS coffee_shop_test;

@@ -28,29 +28,51 @@
 | 소프트웨어 | 버전 | 용도 |
 |-----------|------|------|
 | Java | 21+ | 애플리케이션 빌드/실행 |
-| MySQL | 8.0+ | 메인 데이터 저장소 |
-| Redis | 7.0+ | 캐시 + 분산 락 |
+| Docker & Docker Compose | 최신 | MySQL + Redis 실행 (권장) |
+| MySQL | 8.0+ | 메인 데이터 저장소 (Docker 미사용 시) |
+| Redis | 7.0+ | 캐시 + 분산 락 (Docker 미사용 시) |
 
-### 3-1. MySQL 데이터베이스 생성
-
-```sql
-CREATE DATABASE IF NOT EXISTS coffee_shop;
-CREATE DATABASE IF NOT EXISTS coffee_shop_test;  -- 테스트용
-```
-
-> 기본 접속 정보: `root` / `root` / `localhost:3306`  
-> 변경이 필요하면 `src/main/resources/application.yml`의 `spring.datasource` 섹션을 수정하세요.
-
-### 3-2. Redis 실행 확인
+### 3-1. 인프라 실행 (Docker Compose — 권장)
 
 ```bash
+# 프로젝트 루트에서
+docker compose up -d
+```
+
+MySQL(`localhost:3306`)과 Redis(`localhost:6379`)가 함께 기동됩니다.  
+`coffee_shop`, `coffee_shop_test` 데이터베이스가 자동 생성됩니다.
+
+```bash
+# 상태 확인
+docker compose ps
+
+# 종료
+docker compose down
+
+# 데이터까지 삭제 후 종료
+docker compose down -v
+```
+
+### 3-1-alt. 인프라 직접 설치 (Docker 미사용 시)
+
+MySQL과 Redis를 직접 설치한 경우 아래를 수행합니다.
+
+```sql
+-- MySQL 접속 후
+CREATE DATABASE IF NOT EXISTS coffee_shop;
+CREATE DATABASE IF NOT EXISTS coffee_shop_test;
+```
+
+```bash
+# Redis 동작 확인
 redis-cli ping
 # 응답: PONG
 ```
 
-> 기본 접속 정보: `localhost:6379` (인증 없음)
+> 기본 접속 정보: MySQL `root` / `root` / `localhost:3306`, Redis `localhost:6379` (인증 없음)  
+> 변경이 필요하면 `src/main/resources/application.yml`의 `spring.datasource`, `spring.data.redis` 섹션을 수정하세요.
 
-### 3-3. 애플리케이션 빌드 및 실행
+### 3-2. 애플리케이션 빌드 및 실행
 
 ```bash
 # 프로젝트 루트에서
@@ -65,7 +87,7 @@ Started CoffeeShopApplication in X.XXX seconds
 > **테이블 자동 생성:** `schema.sql`이 서버 시작 시 자동 실행되어 6개 테이블을 생성합니다 (`CREATE TABLE IF NOT EXISTS`).  
 > **초기 데이터:** `data.sql`이 테스트 유저 2명, 포인트, 메뉴 5종을 `INSERT IGNORE`로 삽입합니다.
 
-### 3-4. Swagger UI 접속
+### 3-3. Swagger UI 접속
 
 ```
 http://localhost:8080/swagger-ui.html
@@ -73,7 +95,7 @@ http://localhost:8080/swagger-ui.html
 
 4개 API 그룹(Menu, Point, Order)을 UI에서 바로 호출하고 응답을 확인할 수 있습니다.
 
-### 3-5. 테스트 실행
+### 3-4. 테스트 실행
 
 ```bash
 # 단위 테스트만 (DB/Redis 불필요)
@@ -91,13 +113,13 @@ http://localhost:8080/swagger-ui.html
 erDiagram
     users {
         BIGINT id PK
-        VARCHAR(50) name
+        VARCHAR name
         DATETIME created_at
     }
 
     menu {
         BIGINT id PK
-        VARCHAR(100) name
+        VARCHAR name
         INT price
         DATETIME created_at
         DATETIME updated_at
@@ -105,7 +127,7 @@ erDiagram
 
     point {
         BIGINT id PK
-        BIGINT user_id UK, FK
+        BIGINT user_id "UK, FK"
         BIGINT balance
         DATETIME created_at
         DATETIME updated_at
@@ -114,7 +136,7 @@ erDiagram
     point_history {
         BIGINT id PK
         BIGINT user_id FK
-        VARCHAR(20) type
+        VARCHAR type
         BIGINT amount
         BIGINT balance_after
         DATETIME created_at
@@ -125,16 +147,16 @@ erDiagram
         BIGINT user_id FK
         BIGINT menu_id FK
         INT price
-        VARCHAR(20) status
+        VARCHAR status
         DATETIME ordered_at
     }
 
     outbox_event {
         BIGINT id PK
-        VARCHAR(50) aggregate_type
+        VARCHAR aggregate_type
         BIGINT aggregate_id
         TEXT payload
-        VARCHAR(20) status
+        VARCHAR status
         DATETIME created_at
         DATETIME sent_at
     }
