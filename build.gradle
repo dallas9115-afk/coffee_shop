@@ -26,7 +26,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
 	// Redisson (분산 락)
-	implementation 'org.redisson:redisson-spring-boot-starter:3.37.0'
+	implementation 'org.redisson:redisson:3.37.0'
 
 	// Swagger (springdoc-openapi)
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.8'
