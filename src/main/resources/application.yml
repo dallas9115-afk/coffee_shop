@@ -1,0 +1,46 @@
+spring:
+  application:
+    name: coffee-shop
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/coffee_shop?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+    open-in-view: false
+
+  sql:
+    init:
+      mode: always
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  cache:
+    type: redis
+
+# Redisson 설정 (별도 파일)
+# redisson.yml을 사용하거나, 아래처럼 application.yml 내에 설정
+redisson:
+  address: "redis://localhost:6379"
+
+# Outbox 전송 대상 URL (이후 instruction에서 사용)
+data-platform:
+  api:
+    url: http://localhost:8080/mock/data-platform
+
+# Swagger
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
