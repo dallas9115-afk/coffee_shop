@@ -2,6 +2,7 @@ package com.example.coffee_shop.point.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
@@ -27,6 +28,12 @@ public class Point {
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    @Builder
+    public Point(Long userId, Long balance) {
+        this.userId = userId;
+        this.balance = balance;
+    }
 
     @PrePersist
     protected void onCreate() {

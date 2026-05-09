@@ -1,4 +1,4 @@
-package com.example.coffee_shop.order.dto;
+package com.example.coffee_shop.menu.dto;
 
 public interface PopularMenuProjection {
 

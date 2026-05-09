@@ -2,6 +2,7 @@ package com.example.coffee_shop.menu.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
@@ -27,6 +28,12 @@ public class Menu {
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    @Builder
+    public Menu(String name, Integer price) {
+        this.name = name;
+        this.price = price;
+    }
 
     @PrePersist
     protected void onCreate() {
