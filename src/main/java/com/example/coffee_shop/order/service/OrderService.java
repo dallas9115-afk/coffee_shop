@@ -27,7 +27,7 @@ public class OrderService {
 
     private static final String LOCK_KEY_PREFIX = "point:lock:";
     private static final long WAIT_TIME = 5L;
-    private static final long LEASE_TIME = 3L;
+    private static final long LEASE_TIME = -1L;
 
     /**
      * 주문/결제 (분산 락 적용)

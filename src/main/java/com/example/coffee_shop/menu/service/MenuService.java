@@ -3,7 +3,7 @@ package com.example.coffee_shop.menu.service;
 import com.example.coffee_shop.menu.dto.MenuResponse;
 import com.example.coffee_shop.menu.dto.PopularMenuResponse;
 import com.example.coffee_shop.menu.repository.MenuRepository;
-import com.example.coffee_shop.order.dto.PopularMenuProjection;
+import com.example.coffee_shop.menu.dto.PopularMenuProjection;
 import com.example.coffee_shop.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;

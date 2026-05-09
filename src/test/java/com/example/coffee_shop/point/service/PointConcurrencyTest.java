@@ -83,33 +83,10 @@ class PointConcurrencyTest {
     }
 
     private User saveUser(String name) {
-        try {
-            var constructor = User.class.getDeclaredConstructor();
-            constructor.setAccessible(true);
-            User user = constructor.newInstance();
-            var nameField = User.class.getDeclaredField("name");
-            nameField.setAccessible(true);
-            nameField.set(user, name);
-            return userRepository.save(user);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return userRepository.save(User.builder().name(name).build());
     }
 
     private void savePoint(Long userId, Long balance) {
-        try {
-            var constructor = Point.class.getDeclaredConstructor();
-            constructor.setAccessible(true);
-            Point point = constructor.newInstance();
-            var userIdField = Point.class.getDeclaredField("userId");
-            userIdField.setAccessible(true);
-            userIdField.set(point, userId);
-            var balanceField = Point.class.getDeclaredField("balance");
-            balanceField.setAccessible(true);
-            balanceField.set(point, balance);
-            pointRepository.save(point);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        pointRepository.save(Point.builder().userId(userId).balance(balance).build());
     }
 }

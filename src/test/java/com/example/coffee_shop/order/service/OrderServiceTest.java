@@ -1,5 +1,7 @@
 package com.example.coffee_shop.order.service;
 
+import com.example.coffee_shop.common.exception.InsufficientBalanceException;
+import com.example.coffee_shop.common.exception.LockAcquisitionException;
 import com.example.coffee_shop.common.exception.MenuNotFoundException;
 import com.example.coffee_shop.common.exception.UserNotFoundException;
 import com.example.coffee_shop.menu.entity.Menu;
@@ -98,5 +100,42 @@ class OrderServiceTest {
         // when & then
         assertThatThrownBy(() -> orderService.order(request))
                 .isInstanceOf(MenuNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("잔액 부족 시 InsufficientBalanceException")
+    void order_insufficientBalance() throws Exception {
+        // given
+        OrderRequest request = new OrderRequest(1L, 3L);
+
+        given(userRepository.existsById(1L)).willReturn(true);
+        given(menuRepository.findById(3L)).willReturn(Optional.of(menu));
+        given(menu.getName()).willReturn("바닐라라떼");
+        given(menu.getPrice()).willReturn(5500);
+        given(redissonClient.getLock(anyString())).willReturn(rLock);
+        given(rLock.tryLock(anyLong(), anyLong(), any())).willReturn(true);
+        given(rLock.isHeldByCurrentThread()).willReturn(true);
+        given(orderExecutor.execute(1L, 3L, "바닐라라떼", 5500))
+                .willThrow(new InsufficientBalanceException(3000L, 5500L));
+
+        // when & then
+        assertThatThrownBy(() -> orderService.order(request))
+                .isInstanceOf(InsufficientBalanceException.class);
+    }
+
+    @Test
+    @DisplayName("락 획득 실패 시 LockAcquisitionException")
+    void order_lockFailed() throws Exception {
+        // given
+        OrderRequest request = new OrderRequest(1L, 3L);
+
+        given(userRepository.existsById(1L)).willReturn(true);
+        given(menuRepository.findById(3L)).willReturn(Optional.of(menu));
+        given(redissonClient.getLock(anyString())).willReturn(rLock);
+        given(rLock.tryLock(anyLong(), anyLong(), any())).willReturn(false);
+
+        // when & then
+        assertThatThrownBy(() -> orderService.order(request))
+                .isInstanceOf(LockAcquisitionException.class);
     }
 }

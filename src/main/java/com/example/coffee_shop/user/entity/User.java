@@ -2,6 +2,7 @@ package com.example.coffee_shop.user.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
@@ -18,6 +19,11 @@ public class User {
 
     @Column(nullable = false, length = 50)
     private String name;
+
+    @Builder
+    public User(String name) {
+        this.name = name;
+    }
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
